@@ -1,7 +1,6 @@
 {
   "name": "@piraisoodan/tanglish",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "description": "Offline transliteration engine for Indian languages - Tamil (Tanglish), Hindi (Hinglish), Malayalam (Manglish), Telugu (Tenglish)",
   "main": "./dist/index.js",
@@ -49,7 +48,7 @@
     "indian-languages"
   ],
   "author": "Piraisoodan Team",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.0.0",
     "@typescript-eslint/eslint-plugin": "^8.52.0",
