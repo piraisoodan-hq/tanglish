@@ -1,169 +1,115 @@
-import { DICTIONARY } from './dictionary';
-import M_PART1 from './mappings/part_1.json';
-import M_PART2 from './mappings/part_2.json';
-import M_PART3 from './mappings/part_3.json';
-import M_PART4 from './mappings/part_4.json';
-import M_PART5 from './mappings/part_5.json';
-import M_PART6 from './mappings/part_6.json';
+/**
+ * Tanglish - Romanized to Native Script Transliteration Library
+ *
+ * A framework-agnostic transliteration engine supporting multiple Indian languages.
+ * Currently supports Tamil (Tanglish), with architecture ready for:
+ * - Hindi (Hinglish)
+ * - Malayalam (Manglish)
+ * - Telugu (Tenglish)
+ * - And more...
+ *
+ * @example Basic Usage
+ * ```typescript
+ * import { createTamilEngine, transliterate, getSuggestions } from 'tanglish';
+ *
+ * // Quick transliteration
+ * const tamil = transliterate('vanakkam');  // வணக்கம்
+ *
+ * // Get suggestions for autocomplete
+ * const suggestions = getSuggestions('van', 5);
+ * // [{ input: 'vanakkam', output: 'வணக்கம்' }, ...]
+ *
+ * // Or use the engine directly
+ * const engine = createTamilEngine();
+ * engine.transliterate('nandri');  // நன்றி
+ * ```
+ *
+ * @packageDocumentation
+ */
+
+// Core types
+export type {
+  Suggestion,
+  TanglishSuggestion,
+  LanguageConfig,
+  TransliterationEngineInterface,
+  TransliterationEvent,
+  TransliterationCallback,
+} from './types';
+
+// Core engine
+export { TransliterationEngine } from './engine';
+
+// Language configs
+export { tamilConfig } from './languages/tamil';
+export * from './languages';
+
+// Dictionary (for direct access if needed)
+export { DICTIONARY } from './dictionary';
+
+// ============================================
+// Convenience API (Tamil as default)
+// ============================================
+
+import { TransliterationEngine } from './engine';
+import { tamilConfig } from './languages/tamil';
+import type { TanglishSuggestion } from './types';
+
+// Singleton instance for convenience methods
+let defaultEngine: TransliterationEngine | null = null;
 
 /**
- * Hybrid Transliteration Engine
- * Combines standard m17n rules (Greedy) + Custom Tanglish Context Logic
+ * Get or create the default Tamil engine
  */
-export class TransliterationEngine {
-
-  // Custom Overrides for "Tanglish" contexts
-  // Prepend these to ensure they are matched BEFORE standard m17n rules
-  private static OVERRIDES: Array<[string, string]> = [
-    // Force colloquial/tanglish pronunciations
-    ['nga', 'ங்க'],  // enga -> எங்க (not எங)
-    ['ngaa', 'ங்கா'],
-    ['ngi', 'ங்கி'],
-    ['ngu', 'ங்கு'],
-    ['nge', 'ங்கெ'],
-    ['ngo', 'ங்கொ'],
-
-    ['nja', 'ஞ்ச'], // konja -> கொஞ்ச
-    ['nji', 'ஞ்சி'],
-    ['nju', 'ஞ்சு'],
-
-    ['nna', 'ண்ண'], // panna -> பண்ண
-    ['nnu', 'ண்ணு'],
-
-    ['cha', 'ச்ச'], // vacha -> வச்ச (medial?) - debatable at start (chai -> ச்ச?). 
-    // Safest to rely on Dictionary for 'Chennai' etc.
-    ['chi', 'ச்சி'],
-    ['chu', 'ச்சு'],
-
-    ['zh', 'ழ்'], ['ll', 'ள்'],
-    ['dr', 'ட்ர'], // Special handler for 'podradhu' (d-r-a) -> ட்ர
-    ['ei', 'ஐ'],
-
-    ['cl', 'க்ள'],
-
-    ['ee', 'ஈ'],
-    ['ae', 'ஏ']
-  ];
-
-  private static MAPPINGS: Array<[string, string]> = [
-    ...TransliterationEngine.OVERRIDES,
-    ...(M_PART1 as Array<[string, string]>),
-    ...(M_PART2 as Array<[string, string]>),
-    ...(M_PART3 as Array<[string, string]>),
-    ...(M_PART4 as Array<[string, string]>),
-    ...(M_PART5 as Array<[string, string]>),
-    ...(M_PART6 as Array<[string, string]>)
-  ];
-
-  static transliterate(text: string): string {
-    if (!text) return '';
-    const parts = text.split(/([ \t\n\r\.,!?-]+)/);
-    return parts.map(part => {
-      if (/^[ \t\n\r\.,!?-]+$/.test(part)) return part;
-      return this.transliterateWord(part);
-    }).join('');
+function getDefaultEngine(): TransliterationEngine {
+  if (!defaultEngine) {
+    defaultEngine = new TransliterationEngine(tamilConfig);
   }
+  return defaultEngine;
+}
 
-  private static transliterateWord(text: string): string {
-    const lowerText = text.toLowerCase();
-    if (DICTIONARY[lowerText]) return DICTIONARY[lowerText];
+/**
+ * Create a new Tamil transliteration engine
+ */
+export function createTamilEngine(): TransliterationEngine {
+  return new TransliterationEngine(tamilConfig);
+}
 
-    // Heuristics
-    // Heuristics
-    let processedText = text;
-    if (lowerText.startsWith('ye')) processedText = 'e' + text.substr(2);
-    // REMOVED generic y+vowel rule to protect Yoga, Yaanai, etc.
+/**
+ * Create an engine for any supported language
+ */
+export function createEngine(config: import('./types').LanguageConfig): TransliterationEngine {
+  return new TransliterationEngine(config);
+}
 
-    let res = '';
-    let i = 0;
-    const len = processedText.length;
+/**
+ * Transliterate text using the default Tamil engine
+ * @param text - Romanized text to transliterate
+ * @returns Transliterated Tamil text
+ */
+export function transliterate(text: string): string {
+  return getDefaultEngine().transliterate(text);
+}
 
-    while (i < len) {
-      let matchedVal = null;
-      let matchedLen = 0;
+/**
+ * Get suggestions for autocomplete using the default Tamil engine
+ * @param query - Partial romanized text
+ * @param limit - Maximum number of suggestions
+ * @returns Array of suggestions
+ */
+export function getSuggestions(query: string, limit = 10): TanglishSuggestion[] {
+  const suggestions = getDefaultEngine().getSuggestions(query, limit);
+  // Map to TanglishSuggestion for backward compatibility
+  return suggestions.map((s) => ({
+    ...s,
+    tanglish: s.input,
+    tamil: s.output,
+  }));
+}
 
-      // Greedy Match
-      for (const [key, val] of this.MAPPINGS) {
-        let matches = false;
-        if (processedText.startsWith(key, i)) matches = true;
-        else if (key === key.toLowerCase() && processedText.substr(i, key.length).toLowerCase() === key) matches = true;
-
-        if (matches) {
-          matchedVal = val;
-          matchedLen = key.length;
-          break;
-        }
-      }
-
-      if (matchedVal) {
-        // Context Check: 'n' (Alveolar vs Dental)
-        const firstChar = matchedVal[0];
-        if (firstChar === 'ன' || firstChar === 'ன்') {
-          const nextPart = processedText.substr(i + matchedLen);
-          const isStart = (i === 0);
-          const isDentalContext = /^(th|d)/i.test(nextPart);
-
-          if (isStart || isDentalContext) {
-            matchedVal = matchedVal.replace(/^ன்/, 'ந்').replace(/^ன/, 'ந');
-          }
-        }
-
-        // --- UYIR-MEI LOGIC START ---
-        // Look ahead for vowels to blend with this consonant
-        if (matchedVal.endsWith('்')) {
-          const baseConsonant = matchedVal.substring(0, matchedVal.length - 1); // Remove pulli
-          let vowelSign = '';
-          let vowelLen = 0;
-
-          // Check for vowels (Greedy - longest first)
-          // We need a local vowel mapping or reuse global?
-          // Hardcoding common vowel signs for now or use a static map if available
-          // Since I don't have UYIR_MEI_SIGNS in this file anymore? 
-          // I need to RE-ADD UYIR_MEI_SIGNS to the class or defined locally.
-
-          const VOWELS = [
-            ['aa', 'ா'], ['ae', 'ே'], ['ai', 'ை'],
-            ['ii', 'ீ'], ['i', 'ி'],
-            ['uu', 'ூ'], ['u', 'ு'],
-            ['ee', 'ே'], ['e', 'ெ'],
-            ['oo', 'ோ'], ['o', 'ொ'],
-            ['au', 'ௌ'], ['ou', 'ௌ'],
-            ['a', ''] // Inherent 'a' removes pulli
-          ];
-
-          const nextText = processedText.substr(i + matchedLen);
-          for (const [vKey, vVal] of VOWELS) {
-            // Case-insensitive check
-            if (nextText.toLowerCase().startsWith(vKey)) {
-              vowelSign = vVal;
-              vowelLen = vKey.length;
-              break;
-            }
-          }
-
-          if (vowelLen > 0 || (vowelLen === 0 && vowelSign === '')) {
-            // Found a vowel (or inherent 'a' if we want to handle that logic, but 'a' is in array)
-            // Wait, if no VOWEL matched, we keep pulli?
-            // YES. `vowelLen` stays 0. `vowelSign` stays ''.
-            // BUT if we matched 'a', `vowelLen` is 1, `vowelSign` is ''.
-            // If we matched nothing, we append `matchedVal` (with pulli).
-
-            if (vowelLen > 0) {
-              res += baseConsonant + vowelSign;
-              i += matchedLen + vowelLen;
-              continue;
-            }
-          }
-        }
-        // --- UYIR-MEI LOGIC END ---
-
-        res += matchedVal;
-        i += matchedLen;
-      } else {
-        res += processedText[i];
-        i++;
-      }
-    }
-    return res;
-  }
+/**
+ * Check if text contains Tamil characters
+ */
+export function containsTamil(text: string): boolean {
+  return getDefaultEngine().containsTargetScript(text);
 }
