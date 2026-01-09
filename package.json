@@ -28,12 +28,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/desingh-rajan/tanglish.git"
+    "url": "git+https://github.com/piraisoodan-hq/tanglish.git"
   },
   "bugs": {
-    "url": "https://github.com/desingh-rajan/tanglish/issues"
+    "url": "https://github.com/piraisoodan-hq/tanglish/issues"
   },
-  "homepage": "https://github.com/desingh-rajan/tanglish#readme",
+  "homepage": "https://github.com/piraisoodan-hq/tanglish#readme",
   "keywords": [
     "tamil",
     "hindi",
