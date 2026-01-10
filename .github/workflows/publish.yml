@@ -20,6 +20,5 @@ jobs:
       - run: bun install
       - run: bun test
       - run: bun run build
+      - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
       - run: bun publish
-        env:
-          NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
