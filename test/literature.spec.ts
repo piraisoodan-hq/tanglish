@@ -1,4 +1,4 @@
-import { TransliterationEngine } from '../src/index';
+import { transliterate } from '../src/index';
 import { LITERATURE_TEST_CASES } from './literature_dataset';
 
 console.log('--- Running Literature / Textbook Tamil Tests ---');
@@ -7,7 +7,7 @@ let passed = 0;
 let failed = 0;
 
 LITERATURE_TEST_CASES.forEach((t, index) => {
-  const result = TransliterationEngine.transliterate(t.input);
+  const result = transliterate(t.input);
   const pass = result === t.expected;
 
   if (pass) {

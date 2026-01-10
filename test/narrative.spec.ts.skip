@@ -1,4 +1,4 @@
-import { TransliterationEngine } from '../src/index';
+import { transliterate } from '../src/index';
 import { NARRATIVE_TEST_CASES } from './narrative_dataset';
 
 let passed = 0;
@@ -7,7 +7,7 @@ let failed = 0;
 console.log(`--- Running Tanglish Narrative Tests (${NARRATIVE_TEST_CASES.length} Scenarios) ---`);
 
 NARRATIVE_TEST_CASES.forEach(t => {
-  const result = TransliterationEngine.transliterate(t.input);
+  const result = transliterate(t.input);
   if (result === t.expected) {
     passed++;
   } else {

@@ -17,7 +17,16 @@ import M_PART6 from '../../mappings/part_6.json';
  * These are applied BEFORE standard m17n rules
  */
 const TAMIL_OVERRIDES: Array<[string, string]> = [
-  // Force colloquial/tanglish pronunciations
+  // N-family overrides for better phonetic accuracy
+  // Use pulli forms to allow vowel blending
+  ['ndh', 'ந்த்'], // Indhiya -> இந் + திய -> இந்திய
+  ['nth', 'ந்த்'], // panthu -> பந் + து -> பந்து
+  ['nd', 'ண்ட்'], // vandi -> வண் + டி -> வண்டி
+  ['nt', 'ண்ட்'], // current -> கரண்ட்
+  ['nk', 'ங்க்'], // bank -> பேங்க்
+  ['ng', 'ங்க்'], // theengu -> தீங்கு
+
+  // ... existing overrides
   ['nga', 'ங்க'], // enga -> எங்க
   ['ngaa', 'ங்கா'],
   ['ngi', 'ங்கி'],
@@ -43,6 +52,7 @@ const TAMIL_OVERRIDES: Array<[string, string]> = [
   ['cl', 'க்ள'],
   ['ee', 'ஈ'],
   ['ae', 'ே'],
+  ['n', 'ன்'], // Default to alveolar n (fixing Agni -> அக்னி)
 ];
 
 /**

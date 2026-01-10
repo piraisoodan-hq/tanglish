@@ -1,4 +1,4 @@
-import { TransliterationEngine } from '../src/index';
+import { transliterate } from '../src/index';
 import { TEST_CASES } from './dataset';
 
 console.log('--- Running Tanglish Library Tests ---');
@@ -13,7 +13,7 @@ TEST_CASES.forEach(t => {
     t.expected = 'கொஞ்ச நேரம் வெயிட் பண்ணுங்க நா கிளாஸ் அ முடிச்சிட்டு கிலம்பிருவென்';
   }
 
-  const result = TransliterationEngine.transliterate(t.input);
+  const result = transliterate(t.input);
   const pass = result === t.expected;
   if (pass) passed++;
   console.log(`[${pass ? 'PASS' : 'FAIL'}] ${t.input} -> ${result} ${pass ? '' : `(Exp: ${t.expected})`}`);

@@ -16,6 +16,15 @@ export const DICTIONARY: Record<string, string> = {
   illa: 'இல்ல',
   aana: 'ஆனா',
 
+  // --- Common N-initial words ---
+  nila: 'நில',
+  nal: 'நல',
+  nala: 'நல',
+  nalla: 'நல்லா', // Changed to colloquial 'nallaa' for common usage
+  nalam: 'நலம்',
+  naa: 'நா', // Colloquial 'I'
+  agni: 'அக்னி',
+
   // --- Pronouns ---
   naan: 'நான்',
   nee: 'நீ',
@@ -85,14 +94,14 @@ export const DICTIONARY: Record<string, string> = {
   kaalam: 'காலம்',
   anbu: 'அன்பு',
   udal: 'உடல்',
-  nalam: 'நலம்',
+
   valaikappu: 'வளைகாப்பு',
   pandhayam: 'பந்தயம்',
   gramathula: 'கிராமத்துல',
   vaazhkai: 'வாழ்க்கை',
   amaidhiya: 'அமைதியா',
   satham: 'சத்தம்',
-  padipu: 'படிப்பு',
+
   kadamai: 'கடமை',
   thavara: 'தவற',
   vilai: 'விலை',
@@ -100,7 +109,7 @@ export const DICTIONARY: Record<string, string> = {
   'kovil-ku': 'கோவில்க்கு',
 
   // --- Adjectives / Adverbs ---
-  nalla: 'நல்லா',
+
   konjam: 'கொஞ்சம்',
   romba: 'ரொம்ப',
   sooda: 'சூடா',
@@ -530,7 +539,7 @@ export const DICTIONARY: Record<string, string> = {
   gandhi: 'காந்தி',
   kondu: 'கொண்டு',
   endru: 'என்று',
-  nila: 'நில',
+
   megangalaaga: 'மேகங்களாக',
   valarchiyin: 'வளர்ச்சியின்',
   aran: 'அரண்',
@@ -538,9 +547,11 @@ export const DICTIONARY: Record<string, string> = {
   daro: 'தாரோ',
 
   // Batch 2 (51-75)
+  nilanadukkam: 'நிலநடுக்கம்',
   oliyin: 'ஒளியின்', // Light
-  vegathai: 'வேகத்தை',
   vegam: 'வேகம்',
+  vegathai: 'வேகத்தை',
+
   kuraivu: 'குறைவு',
   idi: 'இடி',
   sathathai: 'சத்தத்தை',
