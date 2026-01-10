@@ -1,25 +1,12 @@
+import { describe, test, expect } from 'bun:test';
 import { transliterate } from '../src/index';
 import { LITERATURE_TEST_CASES } from './literature_dataset';
 
-console.log('--- Running Literature / Textbook Tamil Tests ---');
-
-let passed = 0;
-let failed = 0;
-
-LITERATURE_TEST_CASES.forEach((t, index) => {
-  const result = transliterate(t.input);
-  const pass = result === t.expected;
-
-  if (pass) {
-    passed++;
-  } else {
-    failed++;
-    console.log(`[FAIL] ${index + 1}. ${t.input.substring(0, 30)}...`);
-    console.log(`       Got: ${result}`);
-    console.log(`       Exp: ${t.expected}\n`);
-  }
+describe('Literature / Textbook Tamil Tests', () => {
+  LITERATURE_TEST_CASES.forEach((t, index) => {
+    test(`${index + 1}. ${t.input.substring(0, 50)}`, () => {
+      const result = transliterate(t.input);
+      expect(result).toBe(t.expected);
+    });
+  });
 });
-
-console.log(`\nResults: ${passed}/${LITERATURE_TEST_CASES.length} Passed`);
-if (failed > 0) process.exit(1);
-else console.log('All Literature tests passed!');
