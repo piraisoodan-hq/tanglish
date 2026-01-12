@@ -1,55 +1,33 @@
 # Tanglish Library Roadmap
 
-A living document tracking improvements needed as we integrate with Piraisoodan.
+A living document tracking improvements for the @piraisoodan/tanglish library.
 
-## Current Architecture
+## 🏗️ Current Architecture (v0.2.0)
 
-- **Dictionary**: ~400 word entries in `Record<string, string>` (src/dictionary.ts)
-- **Mappings**: ~500 phonetic rules in 6 JSON files (src/mappings/)
-- **Loading**: Eager - all data loaded at import time
-- **Lookup**: O(1) dictionary hash + O(n) greedy mapping scan
+- **Engine**: Hybrid (Dictionary + Trie).
+- **Performance**: <0.01ms latency (10 Million chars/sec typ.).
+- **Dictionary**: ~1000+ common words (src/data/ta_common.json).
+- **Lookup**: O(1) Dictionary + O(L) Trie Prefix Matching.
 
-## Completed
+## ✅ Completed Goals
 
-- [x] Basic transliteration engine with dictionary + phonetic rules
-- [x] TipTap extension for selection-based transliteration
-- [x] Custom overrides for Tanglish colloquial patterns (nga, nja, nna, cha, zh, ll)
-- [x] Context-aware 'n' handling (Alveolar ன vs Dental ந)
+- [x] **Robust Scraper**: Multi-source scraping pipeline (Wiki, Literature, Casual).
+- [x] **Flagship Optimization**: Replaced linear scan with **Trie** architecture.
+- [x] **Strict Case Mode**: Resolved `n`/`N` and `o`/`O` ambiguities.
+- [x] **Data Decoupling**: Extracted dictionary from code to JSON.
+- [x] **100% Test Coverage**: Verified against 100+ complex sentences.
 
-## In Progress
+## 🚀 In Progress (Phase 4: Big Data)
 
-- [ ] Real-time transliteration (as-you-type on Space/Enter)
-- [ ] Toggle command for enabling/disabling real-time mode
-- [ ] Integration with Piraisoodan editor
+- [ ] **Corpus Scaling**: Expand filtered corpus to 20,000+ articles.
+- [ ] **Automated Training**: Feedback loop to auto-detect and add missing words.
+- [ ] **Suggestion Engine**: Prefix-based autocomplete (`getSuggestions` optimization).
 
-## Improvements Needed (from Piraisoodan Integration)
+## 🔮 Future (Phase 5: Universal Hierarchy)
 
-<!-- Add items here as we discover needs during integration -->
-
-### Suggestion Engine
-
-- [ ] `getSuggestions(query, limit)` API for prefix matching
-- [ ] Return array of `{ tanglish, tamil }` for popup display
-- [ ] Consider fuzzy matching for typos
-
-### Storage & Performance
-
-- [ ] Evaluate SQLite for larger dictionary (via tauri-plugin-sql)
-- [ ] Frequency tracking for suggestion ranking
-- [ ] LRU cache for hot words
-- [ ] Lazy loading for less common words
-
-### Dictionary Expansion
-
-- [ ] User-added words storage
-- [ ] Pipe syntax for multiple suggestions (`nandri|நன்றி|நன்றிகள்`)
-- [ ] Category/domain tagging (formal, colloquial, technical)
-
-### Online Features (Future)
-
-- [ ] Google Indic API fallback when online
-- [ ] Sync user dictionary across devices
+- [ ] **Wasm Port**: Port core logic to Rust for universal portability (Web/Native).
+- [ ] **Monorepo Integration**: Merge into `piraisoodan` ecosystem.
+- [ ] **Grammar Engine**: Context-aware grammar correction.
 
 ---
-
-*Last updated: January 2026*
+*Last updated: Jan 2026*

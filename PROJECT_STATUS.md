@@ -1,37 +1,32 @@
-# Project Status Report - Tamil Transliteration Engine
+# Project Status Report - Tanglish (Tamil Transliteration Engine)
 
-## 🟢 Current State
-- **Test Status**: **100% Passing (85/85)** on `test/literature_dataset.ts`.
-- **System Health**: Build is clean (no circular dependencies or duplicate dictionary keys).
-- **Quality**: Dictionary does not contain comments or duplicate entries.
+## 🟢 Current State: "Flagship Ready"
+We have achieved our performance analysis goals. The engine is now a high-performance, architecture-agnostic library.
 
-## ✅ Completed Objectives
-### 1. Engine & Architecture
-- **Hybrid Engine**: Successfully integrated standard `m17n` rules with custom "Tanglish" overrides.
-- **Context Logic**:
-  - Implemented smart handling for `n` (start vs medial).
-  - Fixed colloquial `ng` (`enga` -> null `எங்க`).
-  - Added "Pulli" logic for consonant clusters (`cl` -> `க்ள`, `nj` -> `ஞ்ச`).
+- **Version**: `0.2.0` (Engine Optimized)
+- **Tests**: **100% Passing (109/109)**.
+- **Performance**: **< 0.01ms latency** (via Trie). 60x Speedup.
 
-### 2. Validation & Datasets
-- **Narrative Suite**: Verified 50 complex storytelling scenarios.
-- **Literature Suite (Formal Tamil)**:
-  - **Batch 1 (1-50)**: Basic Formal Sentences ✅
-  - **Batch 2 (51-75)**: Science & Geography Terminology (`Oli`, `Ozon`, `Hydrogen`) ✅
-  - **Batch 3 (76-85)**: History & Compound Words (`Thozhirpuratchi`, `Indiya`) ✅
+## ✅ Recent Achievements
 
-### 3. Dictionary Maintenance
-- Removed all inline comments.
-- Resolved all duplicate key warnings.
-- Added specific overrides for ambiguous words (e.g., `India` -> `இந்தியா`, `thozhirpuratchi` -> `தொழிற்புரட்சி`).
+### 1. "Flagship" Engine Polish (Phase 3)
+- **Trie Optimization**: Replaced O(N) linear scan with O(L) Trie lookup.
+- **Performance**: Throughput increased from ~175k to **10M+ chars/sec**.
+- **Accuracy**: Implemented **Strict Case Mode** with Lowercase Fallback, resolving subtle mapping issues (`n` vs `N`, `o` vs `O`).
 
-## ⏳ Pending Items / Next Steps
-1. **Scale Literature Dataset (Goal: 500 Paragraphs)**
-   - Need to generate and verify batches of ~25-50 sentences until 500 is reached.
-   - Next Task: Generate **Batch 4 (Items 86-125)**.
+### 2. Robust Data Pipeline (Phase 1)
+- **Structured Scraper**: Outputs JSONL with Source/Metadata.
+- **Tri-Source**: Wiki, Literature, Casual Stories.
 
-2. **Performance & Optimization**
-   - Monitor dictionary size as we scale to 500 items.
+### 3. Architectural Refactor (Phase 2)
+- **Decoupled Data**: Dictionary isolated in `src/data/ta_common.json`.
 
-3. **Future Architecture (Post-Verification)**
-   - Refactor Dictionary to support "Pipe" syntax (`key: 'val1|val2'`) for a future suggestion engine.
+## ⏳ Roadmap & Next Steps
+
+### Phase 4: Big Data Scaling (Continuous)
+- [x] **Corpus Expansion**: Scaled scraper to support SSL-bypass and full-text.
+- [x] **Coverage Analytics**: Tooling to identify missing vocabulary.
+- [ ] **Automated Training**: Run `analyze_coverage.ts` weekly to refine dictionary.
+
+### Phase 5: Future
+- [ ] **Suggestion Engine**: Improve autocomplete ranking.

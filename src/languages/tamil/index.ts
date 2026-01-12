@@ -51,6 +51,7 @@ const TAMIL_OVERRIDES: Array<[string, string]> = [
   ['ei', 'ஐ'],
   ['cl', 'க்ள'],
   ['ee', 'ஈ'],
+  ['I', 'இ'], // Proper noun support (Indhiya -> இந்திய)
   ['ae', 'ே'],
   ['n', 'ன்'], // Default to alveolar n (fixing Agni -> அக்னி)
 ];

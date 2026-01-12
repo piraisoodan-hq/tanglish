@@ -1,4 +1,6 @@
 import { cleanText } from '../utils/cleaner';
+import type { ScrapedItem } from '../types';
+import { v4 as uuidv4 } from 'uuid';
 
 const BASE_URL = 'https://www.sirukathaigal.com/';
 
@@ -8,8 +10,8 @@ const visitedLinks = new Set<string>();
 /**
  * Fetches random stories/conversational text
  */
-export async function fetchCasualData(count: number = 3): Promise<string[]> {
-  const results: string[] = [];
+export async function fetchCasualData(count: number = 3): Promise<ScrapedItem[]> {
+  const results: ScrapedItem[] = [];
 
   try {
     // 1. Fetch Homepage to find story links
@@ -35,6 +37,10 @@ export async function fetchCasualData(count: number = 3): Promise<string[]> {
         const storyRes = await fetch(link);
         const storyHtml = await storyRes.text();
 
+        // Extract title
+        const titleMatch = storyHtml.match(/<title>(.*?)<\/title>/i);
+        const title = titleMatch ? titleMatch[1].trim() : 'Values Story';
+
         // Extract content from <div class="entry-content"> or similar
         // We'll use a naive regex to grab paragraphs <p>...</p> inside the body
         // This is a rough heuristic.
@@ -45,7 +51,16 @@ export async function fetchCasualData(count: number = 3): Promise<string[]> {
 
         const cleaned = cleanText(rawText);
         if (cleaned.length > 50) {
-          results.push(cleaned);
+          results.push({
+            id: uuidv4(),
+            text: cleaned,
+            source: 'casual',
+            metadata: {
+              title,
+              url: link,
+            },
+            scrapedAt: new Date().toISOString(),
+          });
         }
       } catch (e) {
         // console.warn('Failed to fetch story', link);

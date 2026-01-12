@@ -1,4 +1,6 @@
 import { cleanText } from '../utils/cleaner';
+import type { ScrapedItem } from '../types';
+import { v4 as uuidv4 } from 'uuid';
 
 const INDEX_URL = 'http://www.projectmadurai.org/pm_works.html';
 const BASE_URL = 'http://www.projectmadurai.org/';
@@ -38,19 +40,23 @@ async function getBookLinks(): Promise<string[]> {
  * Fetches random books from Project Madurai
  * @param count Number of books to fetch chunks from
  */
-export async function fetchMaduraiData(count: number = 2): Promise<string[]> {
+export async function fetchMaduraiData(count: number = 2): Promise<ScrapedItem[]> {
   const links = await getBookLinks();
   const selectedLinks = links.slice(0, count);
   // Rotate links so we don't fetch same ones next time (simple simulated queue)
   cachedLinks = [...links.slice(count), ...selectedLinks];
 
-  const results: string[] = [];
+  const results: ScrapedItem[] = [];
 
   for (const link of selectedLinks) {
     try {
       // console.log(`   ⬇️ Fetching ${link}...`);
       const res = await fetch(link);
       const text = await res.text();
+
+      // Extract title: <title>Project Madurai - ...</title>
+      const titleMatch = text.match(/<title>(.*?)<\/title>/i);
+      const title = titleMatch ? titleMatch[1].trim() : 'Unknown Literature';
 
       // Remove HTML tags crudely but effectively for bulk text
       // 1. Remove scripts/styles
@@ -63,7 +69,17 @@ export async function fetchMaduraiData(count: number = 2): Promise<string[]> {
 
       const cleaned = cleanText(raw);
       if (cleaned.length > 100) {
-        results.push(cleaned);
+        results.push({
+          id: uuidv4(),
+          text: cleaned,
+          source: 'literature',
+          metadata: {
+            title,
+            url: link,
+            publisher: 'Project Madurai',
+          },
+          scrapedAt: new Date().toISOString(),
+        });
       }
     } catch (error) {
       console.warn(`Failed to fetch book ${link}`);

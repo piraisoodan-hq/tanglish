@@ -1,14 +1,24 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "CommonJS",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "declaration": true,
     "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "types": [
+      "bun-types"
+    ]
   },
   "include": [
-    "src"
+    "src",
+    "tools"
+  ],
+  "exclude": [
+    "benchmarks",
+    "test"
   ]
 }

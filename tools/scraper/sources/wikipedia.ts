@@ -1,4 +1,6 @@
 import { cleanText } from '../utils/cleaner';
+import type { ScrapedItem } from '../types';
+import { v4 as uuidv4 } from 'uuid';
 
 const API_ENDPOINT = 'https://ta.wikipedia.org/w/api.php';
 
@@ -21,16 +23,16 @@ function isValidPage(title: string): boolean {
  * Fetches random articles from Tamil Wikipedia
  * @param count Number of articles to fetch
  */
-export async function fetchWikiData(count: number = 5): Promise<string[]> {
+export async function fetchWikiData(count: number = 5): Promise<ScrapedItem[]> {
   const params = new URLSearchParams({
     action: 'query',
     format: 'json',
     generator: 'random',
     grnnamespace: '0', // Main namespace only
-    grnlimit: count.toString(),
     prop: 'extracts',
-    exintro: '1', // Get only the intro (usually highest quality text) or remove for full
-    explaintext: '1', // Get plaintext, not HTML
+    explaintext: 'true', // Needed to get plain text
+    // exintro: '1', // REMOVED: Get full content, not just intro
+    grnlimit: count.toString(),
   });
 
   try {
@@ -39,7 +41,7 @@ export async function fetchWikiData(count: number = 5): Promise<string[]> {
 
     const data = (await response.json()) as WikiResponse;
     const pages = data.query?.pages || {};
-    const results: string[] = [];
+    const results: ScrapedItem[] = [];
 
     for (const key in pages) {
       const page = pages[key];
@@ -47,7 +49,17 @@ export async function fetchWikiData(count: number = 5): Promise<string[]> {
         const cleaned = cleanText(page.extract);
         if (cleaned.length > 50) {
           // Minimum length check
-          results.push(cleaned);
+          results.push({
+            id: uuidv4(),
+            text: cleaned,
+            source: 'wiki',
+            metadata: {
+              title: page.title,
+              pageid: page.pageid,
+              url: `https://ta.wikipedia.org/?curid=${page.pageid}`,
+            },
+            scrapedAt: new Date().toISOString(),
+          });
         }
       }
     }
