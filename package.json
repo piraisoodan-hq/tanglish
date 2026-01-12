@@ -1,6 +1,6 @@
 {
   "name": "@piraisoodan/tanglish",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "description": "Offline transliteration engine for Indian languages - Tamil (Tanglish), Hindi (Hinglish), Malayalam (Manglish), Telugu (Tenglish)",
   "main": "./dist/index.js",
