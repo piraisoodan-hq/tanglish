@@ -1,18 +1,25 @@
-/**
- * Base Transliteration Engine
- * Framework-agnostic, works anywhere (Node.js, Browser, CLI, etc.)
- */
-
+import { Trie } from './utils/trie';
 import type { LanguageConfig, Suggestion, TransliterationEngineInterface } from './types';
 
 export class TransliterationEngine implements TransliterationEngineInterface {
   private config: LanguageConfig;
-  private combinedMappings: Array<[string, string]>;
+  private trie: Trie;
 
   constructor(config: LanguageConfig) {
     this.config = config;
-    // Combine overrides + mappings, overrides take priority
-    this.combinedMappings = [...(config.overrides || []), ...config.mappings];
+    this.trie = new Trie();
+
+    // Combine overrides + mappings in priority order (First = Highest Priority)
+    const allMappings = [...(config.overrides || []), ...config.mappings];
+
+    // Insert into Trie in REVERSE order.
+    // This ensures that the FIRST item in the list (Highest Priority) is inserted LAST,
+    // overwriting any lower-priority duplicates.
+    for (let i = allMappings.length - 1; i >= 0; i--) {
+      const [key, value] = allMappings[i];
+      // Strict case insertion to prevent collisions (e.g. n vs N, o vs O)
+      this.trie.insert(key, value);
+    }
   }
 
   getLanguage(): LanguageConfig {
@@ -81,7 +88,7 @@ export class TransliterationEngine implements TransliterationEngineInterface {
   private transliterateWord(word: string): string {
     const lowerWord = word.toLowerCase();
 
-    // Dictionary lookup first (exact match)
+    // Dictionary lookup first (exact match behavior depends on dictionary case, usually lower)
     if (this.config.dictionary[lowerWord]) {
       return this.config.dictionary[lowerWord];
     }
@@ -99,26 +106,24 @@ export class TransliterationEngine implements TransliterationEngineInterface {
     const len = text.length;
 
     while (i < len) {
-      let matchedValue: string | null = null;
-      let matchedLen = 0;
+      const fragment = text.slice(i);
+      // Find longest matching prefix (Strict Case)
+      let match = this.trie.findLongestMatch(fragment);
 
-      // Greedy match - try longest patterns first
-      for (const [pattern, replacement] of this.combinedMappings) {
-        const segment = text.substr(i, pattern.length);
-
-        // Case-insensitive match
-        if (segment.toLowerCase() === pattern.toLowerCase()) {
-          matchedValue = replacement;
-          matchedLen = pattern.length;
-          break; // First match wins (patterns should be ordered by priority)
+      // Fallback: If no strict match, try lowercase match
+      // This handles "Vedi" -> "vedi" -> "வெடி"
+      if (match.value === null) {
+        const lowerMatch = this.trie.findLongestMatch(fragment.toLowerCase());
+        if (lowerMatch.value !== null) {
+          match = lowerMatch;
         }
       }
 
-      if (matchedValue !== null) {
+      if (match.value !== null) {
         // Apply vowel blending if available
-        const blended = this.applyVowelBlending(matchedValue, text, i + matchedLen);
+        const blended = this.applyVowelBlending(match.value, text, i + match.matchedLength);
         result += blended.output;
-        i += matchedLen + blended.consumedExtra;
+        i += match.matchedLength + blended.consumedExtra;
       } else {
         // No match - keep original character
         result += text[i];
